@@ -20,10 +20,5 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Gateway\Gateway.csproj" />
-    <ProjectReference Include="..\NhaTuyenDungAPI\NhaTuyenDungAPI.csproj" />
-    <ProjectReference Include="..\UngVienAPI\UngVienAPI.csproj" />
-  </ItemGroup>
 
 </Project>

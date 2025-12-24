@@ -18,9 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="DAL\" />
-    <Folder Include="BLL\" />
-    <Folder Include="DTO\" />
+
   </ItemGroup>
 
 </Project>
