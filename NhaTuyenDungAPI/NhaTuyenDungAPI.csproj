@@ -18,6 +18,9 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="DTO\" />
+    <Folder Include="DAL\" />
+    <Folder Include="BLL\" />
 
   </ItemGroup>
 
