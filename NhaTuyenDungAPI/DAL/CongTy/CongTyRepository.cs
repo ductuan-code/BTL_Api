@@ -7,23 +7,22 @@ namespace DAL.CongTy
 {
     public class CongTyRepository : ICongTyRepository
     {
-        private readonly string _conn;
+        private readonly string _connectionString;
 
         public CongTyRepository(IConfiguration configuration)
         {
-            _conn = configuration.GetConnectionString("DefaultConnection")
-                ?? throw new Exception("Chưa cấu hình ConnectionString");
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         public List<CongTyDto> GetByEmployer(Guid maNguoiDung)
         {
             var list = new List<CongTyDto>();
 
-            using SqlConnection conn = new SqlConnection(_conn);
+            using SqlConnection conn = new SqlConnection(_connectionString);
             using SqlCommand cmd = conn.CreateCommand();
 
             cmd.CommandText = @"
-                SELECT MaCongTy, TenCongTy, Website, MoTa
+                SELECT MaCongTy, TenCongTy, Slug, Website, MoTa
                 FROM CongTy
                 WHERE TaoBoi = @MaNguoiDung";
 
@@ -31,74 +30,74 @@ namespace DAL.CongTy
 
             conn.Open();
             using SqlDataReader rd = cmd.ExecuteReader();
+
             while (rd.Read())
             {
                 list.Add(new CongTyDto
                 {
                     MaCongTy = rd.GetGuid(0),
                     TenCongTy = rd.GetString(1),
-                    Website = rd.IsDBNull(2) ? null : rd.GetString(2),
-                    MoTa = rd.IsDBNull(3) ? null : rd.GetString(3)
+                    Slug = rd.GetString(2),
+                    Website = rd.IsDBNull(3) ? null : rd.GetString(3),
+                    MoTa = rd.IsDBNull(4) ? null : rd.GetString(4)
                 });
             }
-
             return list;
         }
 
-        public CongTyDto? GetById(Guid maCongTy, Guid maNguoiDung)
+        public CongTyDto? GetById(Guid maCongTy)
         {
-            using SqlConnection conn = new SqlConnection(_conn);
+            using SqlConnection conn = new SqlConnection(_connectionString);
             using SqlCommand cmd = conn.CreateCommand();
 
             cmd.CommandText = @"
-                SELECT MaCongTy, TenCongTy, Website, MoTa
-                FROM CongTy
-                WHERE MaCongTy = @MaCongTy
-                  AND TaoBoi = @MaNguoiDung";
+                SELECT MaCongTy, TenCongTy, Slug, Website, MoTa
+                FROM CongTy WHERE MaCongTy = @MaCongTy";
 
             cmd.Parameters.Add("@MaCongTy", SqlDbType.UniqueIdentifier).Value = maCongTy;
-            cmd.Parameters.Add("@MaNguoiDung", SqlDbType.UniqueIdentifier).Value = maNguoiDung;
 
             conn.Open();
             using SqlDataReader rd = cmd.ExecuteReader();
-            if (rd.Read())
-            {
-                return new CongTyDto
-                {
-                    MaCongTy = rd.GetGuid(0),
-                    TenCongTy = rd.GetString(1),
-                    Website = rd.IsDBNull(2) ? null : rd.GetString(2),
-                    MoTa = rd.IsDBNull(3) ? null : rd.GetString(3)
-                };
-            }
 
-            return null;
+            if (!rd.Read()) return null;
+
+            return new CongTyDto
+            {
+                MaCongTy = rd.GetGuid(0),
+                TenCongTy = rd.GetString(1),
+                Slug = rd.GetString(2),
+                Website = rd.IsDBNull(3) ? null : rd.GetString(3),
+                MoTa = rd.IsDBNull(4) ? null : rd.GetString(4)
+            };
         }
 
-        public bool Create(TaoCongTyDto dto, Guid maNguoiDung)
+        public bool Create(TaoCongTyDto dto, string slug, Guid maNguoiDung)
         {
-            using SqlConnection conn = new SqlConnection(_conn);
+            using SqlConnection conn = new SqlConnection(_connectionString);
             using SqlCommand cmd = conn.CreateCommand();
 
             cmd.CommandText = @"
                 INSERT INTO CongTy
-                (MaCongTy, TenCongTy, Website, MoTa, TaoBoi, NgayTao, NgayCapNhat)
+                (MaCongTy, TenCongTy, Slug, Website, MoTa, TaoBoi, NgayTao, NgayCapNhat)
                 VALUES
-                (@MaCongTy, @TenCongTy, @Website, @MoTa, @TaoBoi, GETDATE(), GETDATE())";
+                (@MaCongTy, @TenCongTy, @Slug, @Website, @MoTa, @TaoBoi, GETDATE(), GETDATE())";
 
             cmd.Parameters.Add("@MaCongTy", SqlDbType.UniqueIdentifier).Value = Guid.NewGuid();
             cmd.Parameters.Add("@TenCongTy", SqlDbType.NVarChar, 255).Value = dto.TenCongTy;
-            cmd.Parameters.Add("@Website", SqlDbType.NVarChar, 255).Value = (object?)dto.Website ?? DBNull.Value;
-            cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)dto.MoTa ?? DBNull.Value;
+            cmd.Parameters.Add("@Slug", SqlDbType.NVarChar, 255).Value = slug;
+            cmd.Parameters.Add("@Website", SqlDbType.NVarChar, 255).Value =
+                (object?)dto.Website ?? DBNull.Value;
+            cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value =
+                (object?)dto.MoTa ?? DBNull.Value;
             cmd.Parameters.Add("@TaoBoi", SqlDbType.UniqueIdentifier).Value = maNguoiDung;
 
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public bool Update(Guid maCongTy, TaoCongTyDto dto, Guid maNguoiDung)
+        public bool Update(Guid maCongTy, CapNhatCongTyDto dto)
         {
-            using SqlConnection conn = new SqlConnection(_conn);
+            using SqlConnection conn = new SqlConnection(_connectionString);
             using SqlCommand cmd = conn.CreateCommand();
 
             cmd.CommandText = @"
@@ -107,14 +106,26 @@ namespace DAL.CongTy
                     Website = @Website,
                     MoTa = @MoTa,
                     NgayCapNhat = GETDATE()
-                WHERE MaCongTy = @MaCongTy
-                  AND TaoBoi = @MaNguoiDung";
+                WHERE MaCongTy = @MaCongTy";
 
             cmd.Parameters.Add("@MaCongTy", SqlDbType.UniqueIdentifier).Value = maCongTy;
             cmd.Parameters.Add("@TenCongTy", SqlDbType.NVarChar, 255).Value = dto.TenCongTy;
-            cmd.Parameters.Add("@Website", SqlDbType.NVarChar, 255).Value = (object?)dto.Website ?? DBNull.Value;
-            cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)dto.MoTa ?? DBNull.Value;
-            cmd.Parameters.Add("@MaNguoiDung", SqlDbType.UniqueIdentifier).Value = maNguoiDung;
+            cmd.Parameters.Add("@Website", SqlDbType.NVarChar, 255).Value =
+                (object?)dto.Website ?? DBNull.Value;
+            cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value =
+                (object?)dto.MoTa ?? DBNull.Value;
+
+            conn.Open();
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool Delete(Guid maCongTy)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            using SqlCommand cmd = conn.CreateCommand();
+
+            cmd.CommandText = "DELETE FROM CongTy WHERE MaCongTy = @MaCongTy";
+            cmd.Parameters.Add("@MaCongTy", SqlDbType.UniqueIdentifier).Value = maCongTy;
 
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;

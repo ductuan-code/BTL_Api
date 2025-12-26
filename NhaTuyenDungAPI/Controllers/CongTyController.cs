@@ -17,31 +17,22 @@ namespace NhaTuyenDungAPI.Controllers
 
         [HttpGet("{maNguoiDung}")]
         public IActionResult GetMyCompanies(Guid maNguoiDung)
-        {
-            return Ok(_service.GetMyCompanies(maNguoiDung));
-        }
+            => Ok(_service.GetMyCompanies(maNguoiDung));
 
-        [HttpGet("{maNguoiDung}/{maCongTy}")]
-        public IActionResult Detail(Guid maNguoiDung, Guid maCongTy)
-        {
-            var data = _service.GetDetail(maCongTy, maNguoiDung);
-            return data == null ? NotFound() : Ok(data);
-        }
+        [HttpGet("detail/{maCongTy}")]
+        public IActionResult GetDetail(Guid maCongTy)
+            => Ok(_service.GetById(maCongTy));
 
         [HttpPost("{maNguoiDung}")]
         public IActionResult Create(Guid maNguoiDung, [FromBody] TaoCongTyDto dto)
-        {
-            return _service.TaoCongTy(dto, maNguoiDung)
-                ? Ok("Tạo công ty thành công")
-                : BadRequest();
-        }
+            => Ok(_service.TaoCongTy(dto, maNguoiDung));
 
-        [HttpPut("{maNguoiDung}/{maCongTy}")]
-        public IActionResult Update(Guid maNguoiDung, Guid maCongTy, [FromBody] TaoCongTyDto dto)
-        {
-            return _service.CapNhatCongTy(maCongTy, dto, maNguoiDung)
-                ? Ok("Cập nhật thành công")
-                : BadRequest("Không có quyền hoặc không tồn tại");
-        }
+        [HttpPut("{maCongTy}")]
+        public IActionResult Update(Guid maCongTy, [FromBody] CapNhatCongTyDto dto)
+            => Ok(_service.CapNhat(maCongTy, dto));
+
+        [HttpDelete("{maCongTy}")]
+        public IActionResult Delete(Guid maCongTy)
+            => Ok(_service.Xoa(maCongTy));
     }
 }
