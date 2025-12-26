@@ -13,13 +13,15 @@ namespace BLL.CongTy
         }
 
         public List<CongTyDto> GetMyCompanies(Guid maNguoiDung)
-        {
-            return _repo.GetByEmployer(maNguoiDung);
-        }
+            => _repo.GetByEmployer(maNguoiDung);
+
+        public CongTyDto? GetDetail(Guid maCongTy, Guid maNguoiDung)
+            => _repo.GetById(maCongTy, maNguoiDung);
 
         public bool TaoCongTy(TaoCongTyDto dto, Guid maNguoiDung)
-        {
-            return _repo.Create(dto, maNguoiDung);
-        }
+            => _repo.Create(dto, maNguoiDung);
+
+        public bool CapNhatCongTy(Guid maCongTy, TaoCongTyDto dto, Guid maNguoiDung)
+            => _repo.Update(maCongTy, dto, maNguoiDung);
     }
 }
