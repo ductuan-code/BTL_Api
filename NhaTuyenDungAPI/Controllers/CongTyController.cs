@@ -16,23 +16,33 @@ namespace NhaTuyenDungAPI.Controllers
         }
 
         [HttpGet("{maNguoiDung}")]
-        public IActionResult GetMyCompanies(Guid maNguoiDung)
-            => Ok(_service.GetMyCompanies(maNguoiDung));
-
-        [HttpGet("detail/{maCongTy}")]
-        public IActionResult GetDetail(Guid maCongTy)
-            => Ok(_service.GetById(maCongTy));
+        public IActionResult Get(Guid maNguoiDung)
+        {
+            return Ok(_service.GetMyCompanies(maNguoiDung));
+        }
 
         [HttpPost("{maNguoiDung}")]
         public IActionResult Create(Guid maNguoiDung, [FromBody] TaoCongTyDto dto)
-            => Ok(_service.TaoCongTy(dto, maNguoiDung));
+        {
+            return _service.TaoCongTy(dto, maNguoiDung)
+                ? Ok("Tạo công ty thành công")
+                : BadRequest("Tạo thất bại");
+        }
 
         [HttpPut("{maCongTy}")]
         public IActionResult Update(Guid maCongTy, [FromBody] CapNhatCongTyDto dto)
-            => Ok(_service.CapNhat(maCongTy, dto));
+        {
+            return _service.CapNhat(maCongTy, dto)
+                ? Ok("Cập nhật thành công")
+                : BadRequest("Cập nhật thất bại");
+        }
 
         [HttpDelete("{maCongTy}")]
         public IActionResult Delete(Guid maCongTy)
-            => Ok(_service.Xoa(maCongTy));
+        {
+            return _service.Xoa(maCongTy)
+                ? Ok("Xóa thành công")
+                : BadRequest("Xóa thất bại");
+        }
     }
 }
