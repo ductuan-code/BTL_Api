@@ -22,12 +22,12 @@ namespace UngVienAPI.Models
         [MaxLength(50)]
         public string LoaiFile { get; set; }
 
-        public long KichThuoc { get; set; }
+        public long? KichThuoc { get; set; }
         public bool MacDinh { get; set; } = true;
         public DateTime NgayTaiLen { get; set; } = DateTime.Now;
 
         [MaxLength(200)]
-        public string MaHash { get; set; }
+        public string? MaHash { get; set; }
 
         public ICollection<DonUngTuyen> DonUngTuyens { get; set; }
     }
