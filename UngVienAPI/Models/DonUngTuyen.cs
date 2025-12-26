@@ -11,7 +11,6 @@ namespace UngVienAPI.Models
 
         [ForeignKey("ViecLam")]
         public Guid MaViecLam { get; set; }
-        public ViecLam ViecLam { get; set; }
         public virtual ViecLam MaViecLamNavigation { get; set; } = null!;
         [ForeignKey("UngVien")]
         public Guid MaUngVien { get; set; }
