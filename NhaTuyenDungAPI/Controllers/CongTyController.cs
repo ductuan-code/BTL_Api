@@ -21,11 +21,27 @@ namespace NhaTuyenDungAPI.Controllers
             return Ok(_service.GetMyCompanies(maNguoiDung));
         }
 
-        [HttpPost("{maNguoiDung}")]
-        public IActionResult Create(Guid maNguoiDung, TaoCongTyDto dto)
+        [HttpGet("{maNguoiDung}/{maCongTy}")]
+        public IActionResult Detail(Guid maNguoiDung, Guid maCongTy)
         {
-            var result = _service.TaoCongTy(dto, maNguoiDung);
-            return result ? Ok("Tạo công ty thành công") : BadRequest("Tạo công ty thất bại");
+            var data = _service.GetDetail(maCongTy, maNguoiDung);
+            return data == null ? NotFound() : Ok(data);
+        }
+
+        [HttpPost("{maNguoiDung}")]
+        public IActionResult Create(Guid maNguoiDung, [FromBody] TaoCongTyDto dto)
+        {
+            return _service.TaoCongTy(dto, maNguoiDung)
+                ? Ok("Tạo công ty thành công")
+                : BadRequest();
+        }
+
+        [HttpPut("{maNguoiDung}/{maCongTy}")]
+        public IActionResult Update(Guid maNguoiDung, Guid maCongTy, [FromBody] TaoCongTyDto dto)
+        {
+            return _service.CapNhatCongTy(maCongTy, dto, maNguoiDung)
+                ? Ok("Cập nhật thành công")
+                : BadRequest("Không có quyền hoặc không tồn tại");
         }
     }
 }
