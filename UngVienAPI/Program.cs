@@ -10,8 +10,6 @@ builder.Services.AddDbContext<BTLapicontext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 // Add services to the container.
 
-
-
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -31,6 +29,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
