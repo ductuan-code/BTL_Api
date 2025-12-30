@@ -17,5 +17,15 @@
         // Có thể thêm validate nếu muốn
         _dal.Create(dto);
     }
+    public void UpdateNguoiDung(Guid id, UpdateNguoiDungDto dto)
+    {
+        _dal.Update(id, dto);
+    }
+    public void DeleteNguoiDung(Guid id)
+    {
+        _dal.Delete(id);
+    }
+
+
 }
 

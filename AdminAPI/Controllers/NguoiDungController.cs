@@ -23,6 +23,20 @@ public class NguoiDungController : ControllerBase
         _bll.CreateNguoiDung(dto);
         return Ok("Tạo người dùng thành công");
     }
+    [HttpPut("{id}")]
+    public IActionResult Update(Guid id, [FromBody] UpdateNguoiDungDto dto)
+    {
+        _bll.UpdateNguoiDung(id, dto);
+        return Ok("Cập nhật thành công");
+    }
+    [HttpDelete("{id}")]
+    public IActionResult Delete(Guid id)
+    {
+        _bll.DeleteNguoiDung(id);
+        return Ok("Xoá thành công");
+    }
+
+
 }
 
 
