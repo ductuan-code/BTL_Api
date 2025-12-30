@@ -59,5 +59,40 @@ public class NguoiDungDAL
 
         cmd.ExecuteNonQuery();
     }
+    public void Update(Guid id, UpdateNguoiDungDto dto)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        var sql = @"
+        UPDATE NguoiDung
+        SET HoTen = @HoTen,
+            SoDienThoai = @SoDienThoai,
+            TrangThai = @TrangThai,
+            NgayCapNhat = GETDATE()
+        WHERE MaNguoiDung = @Id";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@HoTen", dto.HoTen ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@SoDienThoai", dto.SoDienThoai ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@TrangThai", dto.TrangThai);
+        cmd.Parameters.AddWithValue("@Id", id);
+
+        cmd.ExecuteNonQuery();
+    }
+    public void Delete(Guid id)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        var sql = "DELETE FROM NguoiDung WHERE MaNguoiDung = @Id";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+
+        cmd.ExecuteNonQuery();
+    }
+
+
 }
 
