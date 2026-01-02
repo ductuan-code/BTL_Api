@@ -4,6 +4,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<DbHelper>();
 builder.Services.AddSingleton<NguoiDungDAL>();
 builder.Services.AddSingleton<NguoiDungBLL>();
+builder.Services.AddScoped<CongTyDAL>();
+builder.Services.AddScoped<CongTyBLL>();
+
 
 
 builder.Services.AddControllers();
