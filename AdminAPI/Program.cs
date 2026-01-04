@@ -6,6 +6,9 @@ builder.Services.AddSingleton<NguoiDungDAL>();
 builder.Services.AddSingleton<NguoiDungBLL>();
 builder.Services.AddScoped<CongTyDAL>();
 builder.Services.AddScoped<CongTyBLL>();
+builder.Services.AddScoped<ViecLamDAL>();
+builder.Services.AddScoped<ViecLamBLL>();
+
 
 
 
