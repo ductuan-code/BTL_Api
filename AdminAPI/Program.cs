@@ -8,6 +8,9 @@ builder.Services.AddScoped<CongTyDAL>();
 builder.Services.AddScoped<CongTyBLL>();
 builder.Services.AddScoped<ViecLamDAL>();
 builder.Services.AddScoped<ViecLamBLL>();
+builder.Services.AddScoped<DonUngTuyenDAL>();
+builder.Services.AddScoped<DonUngTuyenBLL>();
+
 
 
 
