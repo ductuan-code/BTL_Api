@@ -61,4 +61,41 @@ VALUES
 
         cmd.ExecuteNonQuery();
     }
+    public void Update(Guid id, UpdateViecLamDto dto)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        var sql = @"
+        UPDATE ViecLam SET
+            TieuDe = @TieuDe,
+            DiaDiem = @DiaDiem,
+            LoaiHinhCongViec = @LoaiHinhCongViec,
+            MoTa = @MoTa,
+            YeuCau = @YeuCau,
+            TrachNhiem = @TrachNhiem,
+            LuongToiThieu = @LuongToiThieu,
+            LuongToiDa = @LuongToiDa,
+            NgayHetHan = @NgayHetHan,
+            DuocHienThi = @DuocHienThi,
+            NgayCapNhat = GETDATE()
+        WHERE MaViecLam = @Id
+    ";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+        cmd.Parameters.AddWithValue("@TieuDe", dto.TieuDe ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@DiaDiem", dto.DiaDiem ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@LoaiHinhCongViec", dto.LoaiHinhCongViec ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@MoTa", dto.MoTa ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@YeuCau", dto.YeuCau ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@TrachNhiem", dto.TrachNhiem ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@LuongToiThieu", dto.LuongToiThieu ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@LuongToiDa", dto.LuongToiDa ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@NgayHetHan", dto.NgayHetHan ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@DuocHienThi", dto.DuocHienThi);
+
+        cmd.ExecuteNonQuery();
+    }
+
 }

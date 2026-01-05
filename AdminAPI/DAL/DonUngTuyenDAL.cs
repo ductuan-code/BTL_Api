@@ -46,7 +46,7 @@ VALUES (@MaViecLam, @MaUngVien, @MaHoSo, @ThuGioiThieu)";
         var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("@MaViecLam", dto.MaViecLam);
         cmd.Parameters.AddWithValue("@MaUngVien", dto.MaUngVien);
-        cmd.Parameters.AddWithValue("@MaHoSo", (object?)dto.MaHoSo ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@MaHoSo",dto.MaHoSo.HasValue ? dto.MaHoSo : DBNull.Value);
         cmd.Parameters.AddWithValue("@ThuGioiThieu", dto.ThuGioiThieu ?? "");
 
         cmd.ExecuteNonQuery();

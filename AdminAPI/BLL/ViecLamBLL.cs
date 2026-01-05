@@ -13,5 +13,10 @@
     {
         _dal.Create(dto);
     }
+    public void UpdateViecLam(Guid id, UpdateViecLamDto dto)
+    {
+        _dal.Update(id, dto);
+    }
+
 }
 
