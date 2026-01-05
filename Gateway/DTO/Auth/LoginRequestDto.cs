@@ -1,4 +1,4 @@
-﻿namespace Gateway.Controllers.Auth
+﻿namespace Gateway.DTO.Auth
 {
     public class LoginRequestDto
     {
