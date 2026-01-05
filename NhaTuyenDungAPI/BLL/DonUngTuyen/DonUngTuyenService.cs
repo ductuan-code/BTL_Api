@@ -15,11 +15,11 @@ namespace BLL.DonUngTuyen
         public bool TaoDon(Guid maUngVien, TaoDonUngTuyenDto dto)
             => _repo.TaoDon(maUngVien, dto);
 
+        public List<DonUngTuyenDto> LayTheoUngVien(Guid maUngVien)
+            => _repo.LayTheoUngVien(maUngVien);
+
         public List<DonUngTuyenDto> LayTheoViecLam(Guid maViecLam)
             => _repo.LayTheoViecLam(maViecLam);
-
-        public DonUngTuyenDto? LayChiTiet(Guid maDon)
-            => _repo.LayChiTiet(maDon);
 
         public bool CapNhatTrangThai(Guid maDon, string trangThai)
             => _repo.CapNhatTrangThai(maDon, trangThai);
