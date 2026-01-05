@@ -23,6 +23,8 @@ builder.Services.AddScoped<
 
 builder.Services.AddScoped<IPhongVanRepository, PhongVanRepository>();
 builder.Services.AddScoped<IPhongVanService, PhongVanService>();
+builder.Services.AddScoped<DAL.Offer.IOfferRepository, DAL.Offer.OfferRepository>();
+builder.Services.AddScoped<BLL.Offer.IOfferService, BLL.Offer.OfferService>();
 
 
 
