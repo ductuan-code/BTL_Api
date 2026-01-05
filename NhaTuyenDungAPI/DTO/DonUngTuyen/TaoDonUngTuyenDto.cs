@@ -3,6 +3,7 @@
     public class TaoDonUngTuyenDto
     {
         public Guid MaViecLam { get; set; }
-        public string? GhiChu { get; set; }
+        public Guid? MaHoSo { get; set; }
+        public string? ThuGioiThieu { get; set; }
     }
 }
