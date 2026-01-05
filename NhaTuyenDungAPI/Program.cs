@@ -10,6 +10,14 @@ builder.Services.AddScoped<DAL.CongTy.ICongTyRepository, DAL.CongTy.CongTyReposi
 builder.Services.AddScoped<BLL.CongTy.ICongTyService, BLL.CongTy.CongTyService>();
 builder.Services.AddScoped<DAL.ViecLam.IViecLamRepository, DAL.ViecLam.ViecLamRepository>();
 builder.Services.AddScoped<BLL.ViecLam.IViecLamService, BLL.ViecLam.ViecLamService>();
+builder.Services.AddScoped<
+    DAL.DonUngTuyen.IDonUngTuyenRepository,
+    DAL.DonUngTuyen.DonUngTuyenRepository>();
+
+builder.Services.AddScoped<
+    BLL.DonUngTuyen.IDonUngTuyenService,
+    BLL.DonUngTuyen.DonUngTuyenService>();
+
 
 
 
