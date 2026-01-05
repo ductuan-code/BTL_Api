@@ -8,20 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient();
 
-// ===== JWT CONFIG (AN TOÀN) =====
-var jwtSection = builder.Configuration.GetSection("Jwt");
-if (!jwtSection.Exists())
-{
-    throw new Exception("❌ Jwt config NOT FOUND");
-}
-
-var key = jwtSection["Key"];
-if (string.IsNullOrEmpty(key))
-{
-    throw new Exception("❌ Jwt:Key is missing");
-}
+// JWT CONFIG
+var jwt = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwt["Key"]);
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -33,13 +23,13 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-
-            ValidIssuer = jwtSection["Issuer"],
-            ValidAudience = jwtSection["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(key))
+            ValidIssuer = jwt["Issuer"],
+            ValidAudience = jwt["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -51,7 +41,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ⚠️ THỨ TỰ BẮT BUỘC
+// 🔥 BẮT BUỘC THỨ TỰ
 app.UseAuthentication();
 app.UseAuthorization();
 

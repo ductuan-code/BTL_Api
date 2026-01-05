@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Gateway.DTO.Auth;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Data.SqlClient;
 
 namespace Gateway.Controllers.Auth
 {
@@ -27,30 +28,38 @@ namespace Gateway.Controllers.Auth
             conn.Open();
 
             var cmd = new SqlCommand(@"
-                SELECT nd.MaNguoiDung, q.TenQuyen
+                SELECT nd.MaNguoiDung, nd.Email, q.TenQuyen
                 FROM NguoiDung nd
                 JOIN Quyen q ON nd.MaQuyen = q.MaQuyen
-                WHERE nd.Email = @Email AND nd.MatKhauHash = @MatKhau
+                WHERE nd.Email = @Email
+                  AND nd.MatKhauHash = @MatKhau
+                  AND nd.TrangThai = 1
             ", conn);
 
             cmd.Parameters.AddWithValue("@Email", dto.Email);
             cmd.Parameters.AddWithValue("@MatKhau", dto.MatKhau);
 
             using var reader = cmd.ExecuteReader();
+
             if (!reader.Read())
                 return Unauthorized("Sai email hoặc mật khẩu");
 
-            var maNguoiDung = reader.GetGuid(0);
-            var role = reader.GetString(1);
+            var user = new LoginResponseDto
+            {
+                MaNguoiDung = reader.GetGuid(0),
+                Email = reader.GetString(1),
+                TenQuyen = reader.GetString(2)
+            };
 
+            // 🔐 TẠO TOKEN
             var jwt = _config.GetSection("Jwt");
             var key = Encoding.UTF8.GetBytes(jwt["Key"]);
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, maNguoiDung.ToString()),
-                new Claim(ClaimTypes.Role, role),
-                new Claim(JwtRegisteredClaimNames.Email, dto.Email)
+                new Claim(ClaimTypes.NameIdentifier, user.MaNguoiDung.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.TenQuyen)
             };
 
             var token = new JwtSecurityToken(
@@ -64,12 +73,10 @@ namespace Gateway.Controllers.Auth
                     SecurityAlgorithms.HmacSha256)
             );
 
-            return Ok(new LoginResponseDto
+            return Ok(new
             {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                ExpireAt = token.ValidTo,
-                Role = role,
-                MaNguoiDung = maNguoiDung
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                role = user.TenQuyen
             });
         }
     }
