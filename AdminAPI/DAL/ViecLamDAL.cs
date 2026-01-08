@@ -97,5 +97,162 @@ VALUES
 
         cmd.ExecuteNonQuery();
     }
+    public void DuyetViecLam(Guid maViecLam)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        var sql = @"
+        UPDATE ViecLam
+        SET DaDuyet = 1,
+            DuocHienThi = 1,
+            NgayCapNhat = GETDATE()
+        WHERE MaViecLam = @MaViecLam";
+
+        var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@MaViecLam", maViecLam);
+
+        cmd.ExecuteNonQuery();
+    }
+    public void SetTrangThaiHienThi(Guid maViecLam, bool hienThi)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        var sql = @"
+        UPDATE ViecLam
+        SET DuocHienThi = @HienThi
+        WHERE MaViecLam = @MaViecLam
+    ";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@HienThi", hienThi);
+        cmd.Parameters.AddWithValue("@MaViecLam", maViecLam);
+
+        cmd.ExecuteNonQuery();
+    }
+    public List<object> GetViecLamChuaDuyet()
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        var sql = @"
+        SELECT *
+        FROM ViecLam
+        WHERE DaDuyet = 0
+    ";
+
+        using var cmd = new SqlCommand(sql, conn);
+        using var reader = cmd.ExecuteReader();
+
+        var list = new List<object>();
+        while (reader.Read())
+        {
+            list.Add(new
+            {
+                MaViecLam = reader["MaViecLam"],
+                TieuDe = reader["TieuDe"],
+                DiaDiem = reader["DiaDiem"],
+                LuongToiThieu = reader["LuongToiThieu"],
+                LuongToiDa = reader["LuongToiDa"],
+                DaDuyet = reader["DaDuyet"]
+            });
+        }
+
+        return list;
+    }
+    public List<object> Search(string keyword)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        string sql = @"
+        SELECT *
+        FROM ViecLam
+        WHERE TieuDe LIKE @kw
+           OR MoTa LIKE @kw";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
+
+        var reader = cmd.ExecuteReader();
+        var list = new List<object>();
+
+        while (reader.Read())
+        {
+            list.Add(new
+            {
+                MaViecLam = reader["MaViecLam"],
+                TieuDe = reader["TieuDe"],
+                DiaDiem = reader["DiaDiem"],
+                LuongToiThieu = reader["LuongToiThieu"],
+                LuongToiDa = reader["LuongToiDa"],
+                DaDuyet = reader["DaDuyet"]
+            });
+        }
+
+        return list;
+    }
+    public List<object> FilterByDiaDiem(string diaDiem)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        string sql = "SELECT * FROM ViecLam WHERE DiaDiem = @DiaDiem";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@DiaDiem", diaDiem);
+
+        var reader = cmd.ExecuteReader();
+        var list = new List<object>();
+
+        while (reader.Read())
+        {
+            list.Add(new
+            {
+                MaViecLam = reader["MaViecLam"],
+                TieuDe = reader["TieuDe"],
+                DiaDiem = reader["DiaDiem"]
+            });
+        }
+
+        return list;
+    }
+    public List<object> FilterByLuong(int min, int max)
+    {
+        using var conn = _db.GetConnection();
+        conn.Open();
+
+        string sql = @"
+        SELECT *
+        FROM ViecLam
+        WHERE LuongToiThieu >= @min
+          AND LuongToiDa <= @max";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@min", min);
+        cmd.Parameters.AddWithValue("@max", max);
+
+        var reader = cmd.ExecuteReader();
+        var list = new List<object>();
+
+        while (reader.Read())
+        {
+            list.Add(new
+            {
+                MaViecLam = reader["MaViecLam"],
+                TieuDe = reader["TieuDe"],
+                LuongToiThieu = reader["LuongToiThieu"],
+                LuongToiDa = reader["LuongToiDa"]
+            });
+        }
+
+        return list;
+    }
+
+
+
+
+
+
 
 }

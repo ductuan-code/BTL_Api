@@ -10,7 +10,18 @@ builder.Services.AddScoped<ViecLamDAL>();
 builder.Services.AddScoped<ViecLamBLL>();
 builder.Services.AddScoped<DonUngTuyenDAL>();
 builder.Services.AddScoped<DonUngTuyenBLL>();
+builder.Services.AddScoped<ThongKeDAL>();
+builder.Services.AddScoped<ThongKeBLL>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 
 
@@ -34,5 +45,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseCors("AllowAll");
 
 app.Run();
