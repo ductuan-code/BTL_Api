@@ -1,38 +1,74 @@
+﻿using BLL.CongTy;
+using BLL.ViecLam;
+using BLL.DonUngTuyen;
 using BLL.PhongVan;
+using BLL.Offer;
+
+using DAL.CongTy;
+using DAL.ViecLam;
+using DAL.DonUngTuyen;
 using DAL.PhongVan;
+using DAL.Offer;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// =====================
+// ADD SERVICES
+// =====================
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<DAL.CongTy.ICongTyRepository, DAL.CongTy.CongTyRepository>();
-builder.Services.AddScoped<BLL.CongTy.ICongTyService, BLL.CongTy.CongTyService>();
-builder.Services.AddScoped<DAL.ViecLam.IViecLamRepository, DAL.ViecLam.ViecLamRepository>();
-builder.Services.AddScoped<BLL.ViecLam.IViecLamService, BLL.ViecLam.ViecLamService>();
-builder.Services.AddScoped<
-    DAL.DonUngTuyen.IDonUngTuyenRepository,
-    DAL.DonUngTuyen.DonUngTuyenRepository>();
 
-builder.Services.AddScoped<
-    BLL.DonUngTuyen.IDonUngTuyenService,
-    BLL.DonUngTuyen.DonUngTuyenService>();
+// ===== CORS (PHẢI Ở ĐÂY) =====
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://127.0.0.1:5500",
+                    "http://localhost:5500"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
+// ===== DEPENDENCY INJECTION =====
+
+// Công ty
+builder.Services.AddScoped<ICongTyService, CongTyService>();
+builder.Services.AddScoped<ICongTyRepository, CongTyRepository>();
+
+// Việc làm
+builder.Services.AddScoped<IViecLamRepository, ViecLamRepository>();
+builder.Services.AddScoped<IViecLamService, ViecLamService>();
+
+// Đơn ứng tuyển
+builder.Services.AddScoped<IDonUngTuyenRepository, DonUngTuyenRepository>();
+builder.Services.AddScoped<IDonUngTuyenService, DonUngTuyenService>();
+
+// Phỏng vấn
 builder.Services.AddScoped<IPhongVanRepository, PhongVanRepository>();
 builder.Services.AddScoped<IPhongVanService, PhongVanService>();
-builder.Services.AddScoped<DAL.Offer.IOfferRepository, DAL.Offer.OfferRepository>();
-builder.Services.AddScoped<BLL.Offer.IOfferService, BLL.Offer.OfferService>();
 
+// Offer
+builder.Services.AddScoped<IOfferRepository, OfferRepository>();
+builder.Services.AddScoped<IOfferService, OfferService>();
+
+// Auth (nếu có)
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// =====================
+// HTTP PIPELINE
+// =====================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -40,6 +76,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// 🚨 CORS PHẢI TRƯỚC Authorization
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
