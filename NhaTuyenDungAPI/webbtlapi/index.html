@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi" ng-app="EmployerApp">
+<head>
+<meta charset="UTF-8">
+<title>Employer Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="style.css">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="app.js"></script>
+</head>
+
+<body ng-controller="MainCtrl">
+
+<div class="layout">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <h2>EMPLOYER</h2>
+  <button ng-click="setPage('companies')">🏢 Công ty</button>
+  <button ng-click="setPage('jobs')">💼 Việc làm</button>
+  <button ng-click="setPage('applications')">📄 Đơn ứng tuyển</button>
+  <button ng-click="setPage('interviews')">📅 Phỏng vấn</button>
+  <button ng-click="setPage('offers')">💌 Offer</button>
+</aside>
+
+<!-- ===== CONTENT ===== -->
+<main class="content">
+
+<!-- ================= CÔNG TY ================= -->
+<section ng-show="page==='companies'">
+<h2>Công ty</h2>
+
+<div class="card">
+<h3>Thêm / Sửa công ty</h3>
+<input ng-model="companyForm.tenCongTy" placeholder="Tên công ty">
+<input ng-model="companyForm.website" placeholder="Website">
+<input ng-model="companyForm.moTa" placeholder="Mô tả">
+<button ng-click="saveCompany()">💾 Lưu</button>
+<button ng-if="companyForm.maCongTy" ng-click="resetCompany()">↩ Hủy</button>
+</div>
+
+<table>
+<tr><th>Tên</th><th>Website</th><th>Mô tả</th><th></th></tr>
+<tr ng-repeat="c in companies">
+<td>{{c.tenCongTy}}</td>
+<td>{{c.website}}</td>
+<td>{{c.moTa}}</td>
+<td>
+<button ng-click="editCompany(c)">✏️</button>
+<button ng-click="deleteCompany(c.maCongTy)">🗑</button>
+</td>
+</tr>
+</table>
+</section>
+
+<!-- ================= VIỆC LÀM ================= -->
+<section ng-show="page==='jobs'">
+<h2>Việc làm</h2>
+
+<div class="card">
+<h3>Đăng / Sửa việc làm</h3>
+
+<select ng-model="jobForm.maCongTy"
+ ng-options="c.maCongTy as c.tenCongTy for c in companies">
+<option value="">-- Công ty --</option>
+</select>
+
+<input ng-model="jobForm.tieuDe" placeholder="Tiêu đề">
+<input ng-model="jobForm.diaDiem" placeholder="Địa điểm">
+<input ng-model="jobForm.loaiHinhCongViec" placeholder="Loại hình">
+
+<textarea ng-model="jobForm.moTa" placeholder="Mô tả"></textarea>
+<textarea ng-model="jobForm.yeuCau" placeholder="Yêu cầu"></textarea>
+<textarea ng-model="jobForm.trachNhiem" placeholder="Trách nhiệm"></textarea>
+
+<input type="number" ng-model="jobForm.luongToiThieu" placeholder="Lương min">
+<input type="number" ng-model="jobForm.luongToiDa" placeholder="Lương max">
+<input type="date" ng-model="jobForm.ngayHetHan">
+
+<button ng-click="saveJob()">💾 Lưu</button>
+<button ng-if="jobForm.maViecLam" ng-click="resetJob()">↩ Hủy</button>
+</div>
+
+<table>
+<tr>
+<th>Tiêu đề</th><th>Địa điểm</th><th>Lương</th>
+<th>Duyệt</th><th>Hiển thị</th><th></th>
+</tr>
+<tr ng-repeat="j in jobs">
+<td>{{j.tieuDe}}</td>
+<td>{{j.diaDiem}}</td>
+<td>{{j.luongToiThieu}} - {{j.luongToiDa}}</td>
+<td>{{j.daDuyet}}</td>
+<td>{{j.duocHienThi}}</td>
+<td>
+<button ng-click="viewJob(j.maViecLam)">👁</button>
+<button ng-click="editJob(j)">✏️</button>
+<button ng-click="toggleJob(j.maViecLam)">👁‍🗨</button>
+<button ng-click="deleteJob(j.maViecLam)">🗑</button>
+</td>
+</tr>
+</table>
+
+<div class="card" ng-if="jobDetail">
+<h3>Chi tiết việc làm</h3>
+<p><b>Mô tả:</b> {{jobDetail.moTa}}</p>
+<p><b>Yêu cầu:</b> {{jobDetail.yeuCau}}</p>
+<p><b>Trách nhiệm:</b> {{jobDetail.trachNhiem}}</p>
+</div>
+</section>
+
+<!-- ================= ĐƠN ỨNG TUYỂN ================= -->
+<section ng-show="page==='applications'">
+<h2>Đơn ứng tuyển</h2>
+
+<select ng-model="selectedJob"
+ ng-options="j.maViecLam as j.tieuDe for j in jobs">
+<option value="">-- Chọn việc --</option>
+</select>
+<button ng-click="loadApplications()">Xem</button>
+
+<table>
+<tr><th>Mã đơn</th><th>Trạng thái</th><th>Ngày</th><th></th></tr>
+<tr ng-repeat="d in applications">
+<td>{{d.maDon}}</td>
+<td>{{d.trangThai}}</td>
+<td>{{d.ngayNop | date:'dd/MM/yyyy'}}</td>
+<td>
+<button ng-click="updateDon(d.maDon,'interviewing')">📅 PV</button>
+<button ng-click="updateDon(d.maDon,'rejected')">❌</button>
+<button ng-click="prepareOffer(d.maDon)">💌 Offer</button>
+</td>
+</tr>
+</table>
+</section>
+
+<!-- ================= PHỎNG VẤN ================= -->
+<section ng-show="page==='interviews'">
+<h2>Phỏng vấn</h2>
+
+<div class="card">
+<h3>Tạo / Sửa phỏng vấn</h3>
+<input ng-model="interviewForm.maDon" placeholder="Mã đơn">
+<input type="datetime-local" ng-model="interviewForm.thoiGian">
+<input ng-model="interviewForm.diaDiem" placeholder="Địa điểm">
+<input ng-model="interviewForm.thoiLuong" placeholder="Thời lượng">
+<button ng-click="saveInterview()">💾 Lưu</button>
+</div>
+
+<table>
+<tr><th>Mã đơn</th><th>Thời gian</th><th>Địa điểm</th><th>Trạng thái</th><th></th></tr>
+<tr ng-repeat="p in interviews">
+<td>{{p.maDon}}</td>
+<td>{{p.thoiGian | date:'dd/MM/yyyy HH:mm'}}</td>
+<td>{{p.diaDiem}}</td>
+<td>{{p.trangThai}}</td>
+<td>
+<button ng-click="editInterview(p)">✏️</button>
+<button ng-click="updateInterviewStatus(p.maPhongVan,'done')">✔</button>
+<button ng-click="updateInterviewStatus(p.maPhongVan,'cancelled')">❌</button>
+</td>
+</tr>
+</table>
+</section>
+
+<!-- ================= OFFER ================= -->
+<section ng-show="page==='offers'">
+<h2>Offer</h2>
+
+<div class="card">
+<h3>Gửi Offer</h3>
+<input ng-model="offerForm.maDon" placeholder="Mã đơn">
+<input ng-model="offerForm.mucLuongDeXuat" placeholder="Lương">
+<input ng-model="offerForm.donViTienTe" placeholder="VND/USD">
+<input ng-model="offerForm.phucLoi" placeholder="Phúc lợi">
+<button ng-click="sendOffer()">📤 Gửi</button>
+</div>
+
+<div class="card">
+<h3>Xem Offer</h3>
+<input ng-model="maDonOffer" placeholder="Mã đơn">
+<button ng-click="loadOffer()">🔍</button>
+
+<div ng-if="offer">
+<p>Lương: {{offer.mucLuongDeXuat}} {{offer.donViTienTe}}</p>
+<p>Phúc lợi: {{offer.phucLoi}}</p>
+<p>Trạng thái: {{offer.trangThai}}</p>
+<button ng-click="updateOfferStatus('accepted')">✔</button>
+<button ng-click="updateOfferStatus('rejected')">❌</button>
+</div>
+</div>
+</section>
+
+</main>
+</div>
+</body>
+</html>
