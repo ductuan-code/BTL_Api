@@ -17,20 +17,9 @@ public class DonUngTuyenController : ControllerBase
         return Ok(_bll.GetAll());
     }
 
-    [HttpPost]
-    public IActionResult Create([FromBody] CreateDonUngTuyenDto dto)
-    {
-        _bll.Create(dto);
-        return Ok("Nộp đơn ứng tuyển thành công");
-    }
 
 
 
-    [HttpPut("{id}/trangthai")]
-    public IActionResult UpdateTrangThai(Guid id, [FromBody] UpdateTrangThaiDonDto dto)
-    {
-        _bll.UpdateTrangThai(id, dto.TrangThai);
-        return Ok("Cập nhật trạng thái thành công");
-    }
+
 }
 
